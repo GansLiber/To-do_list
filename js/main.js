@@ -2,17 +2,61 @@ let eventBus = new Vue()
 
 Vue.component('main-list',{
     template:`
-    <create-task></create-task>
+    <div>
+        <create-task></create-task>
+        <columns></columns>
+    </div>
     `
 })
 
 Vue.component('columns',{
     template:`
-        
+        <div class="glob-list">
+            <column1  class="column"></column1>
+            <column2  class="column"></column2>
+            <column3  class="column"></column3>
+        </div>
     `
 })
 
-Vue.component('tasks-card', {
+Vue.component('column1',{
+    template:`
+        <div>
+            <p>Начинаем</p>
+            <p>
+                <task-card></task-card>
+            </p>
+        </div>
+    `,
+    data(){
+        return{
+            tasksCol:[]
+        }
+    }
+})
+
+Vue.component('column2',{
+    template:`
+        <div>
+            <p>Продолжаем</p>
+            <p>
+                <task-card></task-card>
+            </p>
+        </div>
+    `
+})
+Vue.component('column3',{
+    template:`
+        <div>
+            <p>Закончили</p>
+            <p>
+                <task-card></task-card>
+            </p>
+        </div>
+    `
+})
+
+Vue.component('task-card', {
     template:`
 
 <div>
@@ -54,7 +98,8 @@ Vue.component('tasks-card', {
 
 Vue.component('create-task',{
     template: `
-    <form class="task-form" @submit.prevent="onSubmit">
+        <div>
+            <form class="task-form" @submit.prevent="onSubmit">
             <div class="container">
                 <h3 class="logo">Создать заметку</h3>
                 <p v-if="errors">
@@ -82,7 +127,8 @@ Vue.component('create-task',{
                     <input id="punct5" v-model="punct5"  type="text"></div>
                 <input type="submit" value="Добавить" class="btn"></input>
             </div>
-        </form>
+            </form>
+        </div>
     `,
     data(){
         return{
@@ -111,11 +157,14 @@ Vue.component('create-task',{
             if (this.checkLength.length>2){
                 let taskReview={
                     name: this.name,
-                    punct1: this.punct1,
-                    punct2: this.punct2,
-                    punct3: this.punct3,
-                    punct4: this.punct4,
-                    punct5: this.punct5,
+
+                    puncts: {
+                        punct1: this.punct1,
+                        punct2: this.punct2,
+                        punct3: this.punct3,
+                        punct4: this.punct4,
+                        punct5: this.punct5,
+                    }
                 }
                 this.removeEmptyValues(taskReview)
                 console.log(taskReview)
@@ -151,7 +200,18 @@ Vue.component('create-task',{
 
 let app = new Vue({
     el:'#app',
-    data:{
+    data:
+        // tasks
 
+        {
+        column1:[
+            {}
+        ],
+        column2:[
+            {}
+        ],
+        column3:[
+            {}
+        ]
     }
 })
