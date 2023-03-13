@@ -63,24 +63,32 @@ Vue.component('column',{
         }
     },
     template:`
-        <div @click="">
+        <div>
+
+            
             <p>{{name}}</p>
             <p>
                <div>
                 <p v-if="!col.length">Нет тасков</p>
                 
-                  <ul>
-                    <li v-for="pun in col" class="taskBorder">
+                  <ul @click="returnId">
+                    <li
+                    v-for="(pun, index) in col" 
+                    class="taskBorder"
+                    :key="pun.id"
+                    @click="(updateTask(index))"
+                    >
                         <p>{{pun.name}}</p>
-                       
+                        <p>{{pun.id}}</p>
+                        <p></p>
                         <ul class="inUl">
                             <li v-for="prop in pun.puncts">
                                 <label for="punct">
-                                <input 
-                                    type="checkbox" 
+                                <input
+                                    type="checkbox"
                                     id="punct" 
                                     value="1"
-                                     @change="taskLangth"
+                                    @change="taskLangth"
                                     >{{prop}}</label><br>
                             </li>
                         </ul>
@@ -101,7 +109,8 @@ Vue.component('column',{
                         punct3:'fee',
                         punct4:'fewe'
                     },
-                    id:0
+                    id:0,
+                    selectedTask:0
                 }
             ],
             checkdTask:[],
@@ -109,9 +118,13 @@ Vue.component('column',{
         }
     },
     methods:{
-        // takeId:{
-        //     col.
-        // },
+        updateTask(index){
+            this.selectedTask = index
+            console.log(index)
+        },
+        returnId(){
+            console.log(this.col)
+        },
         taskLangth(){
             for (task of this.col){
                 let gg = Object.values(task.puncts).length
