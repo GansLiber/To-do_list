@@ -10,29 +10,71 @@ Vue.component('main-list',{
 })
 
 Vue.component('columns',{
+
     template:`
         <div class="glob-list">
-            <column1  class="column"></column1>
-            <column2  class="column"></column2>
-            <column3  class="column"></column3>
+            <column class="column" :name="name" :col="column1"></column>
+            <column class="column" :name="name2" :col="column2"></column>
+            <column class="column" :name="name3" :col="column3"></column>
         </div>
-    `
+    `,
+    data(){
+        return{
+            column1:[],
+            column2:[
+                {
+                    name:'gg',
+                    puncts: {
+                        punct1:'gf',
+                        punct2:'fewe',
+                        punct3:'fee',
+                        punct4:'fewe'
+                    },
+                    id:0
+                }
+            ],
+            column3:[],
+            name: 'Начинаем',
+            name2: 'Продолжаем',
+            name3: 'Закончили'
+        }
+    },
+    methods:{
+        check(){
+            console.log(this.column1)
+        }
+    },
+
+    mounted(){
+        eventBus.$on('review-submitted',taskReview =>
+            this.column1.push(taskReview))
+    }
 })
 
-Vue.component('column1',{
+Vue.component('column',{
+    props:{
+        col:{
+            type: Array,
+            required: true
+        },
+        name:{
+            type: String,
+            required: true
+        }
+    },
     template:`
-        <div>
-            <p>Начинаем</p>
+        <div @click="">
+            <p>{{name}}</p>
             <p>
                <div>
-                <p v-if="!tasks1.length">Нет тасков</p>
+                <p v-if="!col.length">Нет тасков</p>
                 
                   <ul>
-                    <li v-for="task in tasks1" class="taskBorder">
-                        <p>{{task.name}}</p>
+                    <li v-for="pun in col" class="taskBorder">
+                        <p>{{pun.name}}</p>
                        
                         <ul class="inUl">
-                            <li v-for="prop in task.puncts">
+                            <li v-for="prop in pun.puncts">
                                 <label for="punct">
                                 <input 
                                     type="checkbox" 
@@ -67,13 +109,18 @@ Vue.component('column1',{
         }
     },
     methods:{
+        // takeId:{
+        //     col.
+        // },
         taskLangth(){
-            for (task of this.tasks1){
-                console.log(task)
-                for (let prop in task.puncts){
-                    this.count++;
-                }
-                // console.log(task.puncts.length)
+            for (task of this.col){
+                let gg = Object.values(task.puncts).length
+                console.log(gg)
+
+                // for (val in task.puncts){
+                //
+                //     console.log(val)
+                // }
             }
             this.allowMove(this.count)
             console.log(this.count)
@@ -83,112 +130,11 @@ Vue.component('column1',{
             return null
         },
     },
-    mounted(){
-        eventBus.$on('review-submitted',taskReview =>
-            this.tasks1.push(taskReview))
-    }
-
-})
-
-Vue.component('column2',{
-    template:`
-        <div>
-            <p>Продолжаем</p>
-            <p>
-               <div>
-                <p v-if="!tasks2.length">Нет тасков</p>
-                
-                  <ul>
-                    <li v-for="task in tasks2" class="taskBorder">
-                        <p>{{task.name}}</p>
-                       
-                        <ul class="inUl">
-                            <li v-for="prop in task.puncts">
-                                <label for="punct"><input type="checkbox" id="punct" value="1">{{prop}}</label><br>
-                            </li>
-                        </ul>
-                        
-                    </li>
-                </ul>
-            </div>
-           </p>
-        </div>
-    `,
-    data(){
-        return{
-            tasks2:[]
-        }
-    }
-})
-Vue.component('column3',{
-    template:`
-        <div>
-            <p>Закончили</p>
-            <p>
-               <div>
-                <p v-if="!tasks3.length">Нет тасков</p>
-                
-                  <ul>
-                    <li v-for="task in tasks3" class="taskBorder">
-                        <p>{{task.name}}</p>
-                       
-                        <ul class="inUl">
-                            <li v-for="prop in task.puncts">
-                                <label for="punct"><input type="checkbox" id="punct" value="1">{{prop}}</label><br>
-                            </li>
-                        </ul>
-                        
-                    </li>
-                </ul>
-            </div>
-           </p>
-        </div>
-    `,
-    data(){
-        return{
-            tasks3:[]
-        }
-    }
-})
-
-Vue.component('task-card', {
-    template:`
-
-<div>
-    <div>
-    <p v-if="!tasks.length">Нет тасков</p>
-    
-        <ul>
-        <li v-for="task in tasks" class="taskBorder">
-            <p>{{task.name}}</p>
-           
-            <ul class="inUl">
-                <li v-for="prop in task.puncts">
-                    <label for="punct"><input type="checkbox" id="punct" value="1">{{prop}}</label><br>
-                </li>
-            </ul>
-            
-        </li>
-        </ul>
-    </div>
-    
-</div>
-    `,
-
-    data() {
-        return {
-            tasks: [],
-        };
-    },
-
-    methods: {
-
-    },
-
     // mounted(){
     //     eventBus.$on('review-submitted',taskReview =>
-    //         this.tasks.push(taskReview))
+    //         this.tasks1.push(taskReview))
     // }
+
 })
 
 Vue.component('create-task',{
