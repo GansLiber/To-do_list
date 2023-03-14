@@ -13,59 +13,65 @@ Vue.component('columns', {
 
     template: `
         <div class="glob-list">
-            <column class="column" :name="name" :col="column1" @changeTask="changeTask"></column>
-            <column class="column" :name="name2" :col="column2"></column>
-            <column class="column" :name="name3" :col="column3"></column>
+            <column class="column" :colIndex="colIndex1" :name="name" :col="columns[0]" @changeTask="changeTask"></column>
+            <column class="column" :colIndex="colIndex2" :name="name2" :col="columns[1]"></column>
+            <column class="column" :colIndex="colIndex3" :name="name3" :col="columns[2]"></column>
         </div>
     `,
     data() {
         return {
-            column1: [],
-            column2: [
-                {
-                    name: 'gg',
-                    puncts: [
-                        {
-                            punct: 'fdfsdf',
-                            done: false
-                        },
-                        {
-                            punct: 'fdfsdf',
-                            done: false
-                        },
-                        {
-                            punct: 'fdfsdf',
-                            done: false
-                        },
-                        {
-                            punct: null,
-                            done: false
-                        },
-                        {
-                            punct: 'fdfsdf',
-                            done: false
-                        },
-                    ],
-                    id: 0
-                }
+            columns:[
+                [],
+            [
+            {
+                name: 'gg',
+                puncts: [
+                    {
+                        punct: 'fdfsdf',
+                        done: false
+                    },
+                    {
+                        punct: 'fdfsdf',
+                        done: false
+                    },
+                    {
+                        punct: 'fdfsdf',
+                        done: false
+                    },
+                    {
+                        punct: null,
+                        done: false
+                    },
+                    {
+                        punct: 'fdfsdf',
+                        done: false
+                    },
+                ],
+                id: 0
+            }
+        ],
+                [],
             ],
-            column3: [],
-            name: 'Начинаем',
-            name2: 'Продолжаем',
-            name3: 'Закончили'
+
+            name: 'columnStart',
+            name2: 'columnInProgress',
+            name3: 'columnDone',
+
+            colIndex1: 0,
+            colIndex2: 1,
+            colIndex3: 2,
         }
     },
     methods: {
         changeTask(task) {
-            (!this.column1[task.index].puncts[task.indexPuncts].done)? this.column1[task.index].puncts[task.indexPuncts].done = true : this.column1[task.index].puncts[task.indexPuncts].done = false
-            console.log(this.column1[task.index].puncts)
+            (!this.columns[task.colIndex][task.index].puncts[task.indexPuncts].done)? this.columns[task.colIndex][task.index].puncts[task.indexPuncts].done = true : this.columns[task.colIndex][task.index].puncts[task.indexPuncts].done = false
+            console.log(this.columns[task.colIndex])
         },
-
     },
-
+// пора начинать делать переходы тасков на основании их заполненности
     mounted() {
         eventBus.$on('review-submitted', taskReview =>
-            this.column1.push(taskReview))
+            this.columns[0].push(taskReview))
     }
 })
 
@@ -77,6 +83,10 @@ Vue.component('column', {
         },
         name: {
             type: String,
+            required: true
+        },
+        colIndex: {
+            type: Number,
             required: true
         }
     },
@@ -94,7 +104,6 @@ Vue.component('column', {
                     v-for="(pun, index) in col" 
                     class="taskBorder"
                     :key="pun.id"
-                    @click="(updateTask(index))"
                     >
                         <p>{{pun.name}}</p>
                         <p>{{pun.id}}</p>
@@ -108,7 +117,7 @@ Vue.component('column', {
                                     type="checkbox"
                                     id="pun.id" 
                                     value="1"
-                                    @change="changeTask(index, indexPuncts, name)"
+                                    @change="changeTask(index, indexPuncts, colIndex)"
                                     >{{prop.punct}}<p>{{prop.done}}</p></label><br>
                             </li>
                         </ul>
@@ -131,8 +140,8 @@ Vue.component('column', {
         returnId() {
             // console.log(this.col)
         },
-        changeTask(index, indexPuncts, name){
-            this.$emit('changeTask', {index, indexPuncts, name})
+        changeTask(index, indexPuncts, colIndex){
+            this.$emit('changeTask', {index, indexPuncts, colIndex})
         },
         pereborTasks() {
             for (let task of this.col) {
@@ -276,8 +285,6 @@ Vue.component('create-task', {
 let app = new Vue({
     el: '#app',
     methods: {
-        addColumn1(task) {
-            this.column1.push(task)
-        }
+
     }
 })
