@@ -13,7 +13,7 @@ Vue.component('columns', {
 
     template: `
         <div class="glob-list">
-            <column class="column" :name="name" :col="column1"></column>
+            <column class="column" :name="name" :col="column1" @changeTask="changeTask"></column>
             <column class="column" :name="name2" :col="column2"></column>
             <column class="column" :name="name3" :col="column3"></column>
         </div>
@@ -26,23 +26,23 @@ Vue.component('columns', {
                     name: 'gg',
                     puncts: [
                         {
-                            punct1: 'fdfsdf',
+                            punct: 'fdfsdf',
                             done: false
                         },
                         {
-                            punct2: 'fdfsdf',
+                            punct: 'fdfsdf',
                             done: false
                         },
                         {
-                            punct3: 'fdfsdf',
+                            punct: 'fdfsdf',
                             done: false
                         },
                         {
-                            punct4: 'fdfsdf',
+                            punct: null,
                             done: false
                         },
                         {
-                            punct5: 'fdfsdf',
+                            punct: 'fdfsdf',
                             done: false
                         },
                     ],
@@ -58,6 +58,9 @@ Vue.component('columns', {
     methods: {
         check() {
             console.log(this.column1)
+        },
+        changeTask(task) {
+            console.log(task)
         }
     },
 
@@ -98,7 +101,7 @@ Vue.component('column', {
                         <p>{{pun.id}}</p>
                         <ul class="inUl">
                             <li 
-                              v-for="prop in pun.puncts"
+                              v-for="prop, indexPuncts in pun.puncts"
                               v-if="Object.values(prop)[0]!==null"
                               >
                                 <label :for="pun.id">
@@ -106,7 +109,7 @@ Vue.component('column', {
                                     type="checkbox"
                                     id="pun.id" 
                                     value="1"
-                                    @change="taskLangth"
+                                    @change="changeTask(index, indexPuncts, name)"
                                     >{{Object.values(prop)[0]}}<p>{{Object.values(prop)[1]}}</p></label><br>
                             </li>
                         </ul>
@@ -125,15 +128,24 @@ Vue.component('column', {
     methods: {
         updateTask(index) {
             this.selectedTask = index
-            console.log(index)
+            // console.log(index)
         },
         returnId() {
-            console.log(this.col)
+            // console.log(this.col)
         },
-        taskLangth() {
-            for (task of this.col) {
-                let gg = Object.values(task.puncts).length
-                console.log(gg)
+        changeTask(index, indexPuncts, name){
+            console.log({index, indexPuncts, name});
+            this.$emit('changeTask', {index, indexPuncts, name})
+        },
+        pereborTasks() {
+            for (let task of this.col) {
+                for (let punc of task.puncts){
+                    if (punc.done===false){
+                        console.log(punc.done)
+                    }
+                }
+                let gg = task.puncts // let gg = Object.values(task.puncts).length
+
 
                 // for (val in task.puncts){
                 //
@@ -141,7 +153,6 @@ Vue.component('column', {
                 // }
             }
             this.allowMove(this.count)
-            console.log(this.count)
             this.count = null
         },
         allowMove(count) {
@@ -218,23 +229,23 @@ Vue.component('create-task', {
 
                     puncts: [
                         {
-                            punct1: this.punct1,
+                            punct: this.punct1,
                             done: false
                         },
                         {
-                            punct2: this.punct2,
+                            punct: this.punct2,
                             done: false
                         },
                         {
-                            punct3: this.punct3,
+                            punct: this.punct3,
                             done: false
                         },
                         {
-                            punct4: this.punct4,
+                            punct: this.punct4,
                             done: false
                         },
                         {
-                            punct5: this.punct5,
+                            punct: this.punct5,
                             done: false
                         },
                     ],
