@@ -102,7 +102,7 @@ Vue.component('column', {
                         <ul class="inUl">
                             <li 
                               v-for="prop, indexPuncts in pun.puncts"
-                              v-if="Object.values(prop)[0]!==null"
+                              v-if="prop.punct!==null"
                               >
                                 <label :for="pun.id">
                                 <input
@@ -110,7 +110,7 @@ Vue.component('column', {
                                     id="pun.id" 
                                     value="1"
                                     @change="changeTask(index, indexPuncts, name)"
-                                    >{{Object.values(prop)[0]}}<p>{{Object.values(prop)[1]}}</p></label><br>
+                                    >{{prop.punct}}<p>{{prop.done}}</p></label><br>
                             </li>
                         </ul>
                     </li>
