@@ -1,7 +1,7 @@
 let eventBus = new Vue()
 
-Vue.component('main-list',{
-    template:`
+Vue.component('main-list', {
+    template: `
     <div>
         <create-task></create-task>
         <columns></columns>
@@ -9,60 +9,76 @@ Vue.component('main-list',{
     `
 })
 
-Vue.component('columns',{
+Vue.component('columns', {
 
-    template:`
+    template: `
         <div class="glob-list">
             <column class="column" :name="name" :col="column1"></column>
             <column class="column" :name="name2" :col="column2"></column>
             <column class="column" :name="name3" :col="column3"></column>
         </div>
     `,
-    data(){
-        return{
-            column1:[],
-            column2:[
+    data() {
+        return {
+            column1: [],
+            column2: [
                 {
-                    name:'gg',
-                    puncts: {
-                        punct1:'gf',
-                        punct2:'fewe',
-                        punct3:'fee',
-                        punct4:'fewe'
-                    },
-                    id:0
+                    name: 'gg',
+                    puncts: [
+                        {
+                            punct1: 'fdfsdf',
+                            done: false
+                        },
+                        {
+                            punct2: 'fdfsdf',
+                            done: false
+                        },
+                        {
+                            punct3: 'fdfsdf',
+                            done: false
+                        },
+                        {
+                            punct4: 'fdfsdf',
+                            done: false
+                        },
+                        {
+                            punct5: 'fdfsdf',
+                            done: false
+                        },
+                    ],
+                    id: 0
                 }
             ],
-            column3:[],
+            column3: [],
             name: 'Начинаем',
             name2: 'Продолжаем',
             name3: 'Закончили'
         }
     },
-    methods:{
-        check(){
+    methods: {
+        check() {
             console.log(this.column1)
         }
     },
 
-    mounted(){
-        eventBus.$on('review-submitted',taskReview =>
+    mounted() {
+        eventBus.$on('review-submitted', taskReview =>
             this.column1.push(taskReview))
     }
 })
 
-Vue.component('column',{
-    props:{
-        col:{
+Vue.component('column', {
+    props: {
+        col: {
             type: Array,
             required: true
         },
-        name:{
+        name: {
             type: String,
             required: true
         }
     },
-    template:`
+    template: `
         <div>
 
             
@@ -80,16 +96,18 @@ Vue.component('column',{
                     >
                         <p>{{pun.name}}</p>
                         <p>{{pun.id}}</p>
-                        <p></p>
                         <ul class="inUl">
-                            <li v-for="prop in pun.puncts">
-                                <label for="punct">
+                            <li 
+                              v-for="prop in pun.puncts"
+                              v-if="Object.values(prop)[0]!==null"
+                              >
+                                <label :for="pun.id">
                                 <input
                                     type="checkbox"
-                                    id="punct" 
+                                    id="pun.id" 
                                     value="1"
                                     @change="taskLangth"
-                                    >{{prop}}</label><br>
+                                    >{{Object.values(prop)[0]}}<p>{{Object.values(prop)[1]}}</p></label><br>
                             </li>
                         </ul>
                     </li>
@@ -98,35 +116,22 @@ Vue.component('column',{
            </p>
         </div>
     `,
-    data(){
-        return{
-            tasks1:[
-                {
-                    name:'gg',
-                    puncts: {
-                        punct1:'gf',
-                        punct2:'fewe',
-                        punct3:'fee',
-                        punct4:'fewe'
-                    },
-                    id:0,
-                    selectedTask:0
-                }
-            ],
-            checkdTask:[],
-            count:null
+    data() {
+        return {
+            checkdTask: [],
+            count: null
         }
     },
-    methods:{
-        updateTask(index){
+    methods: {
+        updateTask(index) {
             this.selectedTask = index
             console.log(index)
         },
-        returnId(){
+        returnId() {
             console.log(this.col)
         },
-        taskLangth(){
-            for (task of this.col){
+        taskLangth() {
+            for (task of this.col) {
                 let gg = Object.values(task.puncts).length
                 console.log(gg)
 
@@ -137,9 +142,9 @@ Vue.component('column',{
             }
             this.allowMove(this.count)
             console.log(this.count)
-            this.count=null
+            this.count = null
         },
-        allowMove(count){
+        allowMove(count) {
             return null
         },
     },
@@ -150,7 +155,7 @@ Vue.component('column',{
 
 })
 
-Vue.component('create-task',{
+Vue.component('create-task', {
     template: `
         <div>
             <form class="task-form" @submit.prevent="onSubmit">
@@ -184,8 +189,8 @@ Vue.component('create-task',{
             </form>
         </div>
     `,
-    data(){
-        return{
+    data() {
+        return {
             name: null,
             punct1: null,
             punct2: null,
@@ -197,30 +202,45 @@ Vue.component('create-task',{
             checkLength: []
         }
     },
-    methods:{
-        onSubmit(){
+    methods: {
+        onSubmit() {
             this.checkLength.push(
                 this.punct1,
                 this.punct2,
                 this.punct3,
                 this.punct4,
                 this.punct5,
-                )
+            )
             this.checkLength = this.checkLength.filter(Boolean);
-            if (this.checkLength.length>2){
-                let taskReview={
+            if (this.checkLength.length > 2) {
+                let taskReview = {
                     name: this.name,
 
-                    puncts: {
-                        punct1: this.punct1,
-                        punct2: this.punct2,
-                        punct3: this.punct3,
-                        punct4: this.punct4,
-                        punct5: this.punct5,
-                    },
-                    id:this.id
+                    puncts: [
+                        {
+                            punct1: this.punct1,
+                            done: false
+                        },
+                        {
+                            punct2: this.punct2,
+                            done: false
+                        },
+                        {
+                            punct3: this.punct3,
+                            done: false
+                        },
+                        {
+                            punct4: this.punct4,
+                            done: false
+                        },
+                        {
+                            punct5: this.punct5,
+                            done: false
+                        },
+                    ],
+                    id: this.id
                 }
-                this.removeEmptyValues(taskReview.puncts)
+                // this.removeEmptyValues(taskReview.puncts)
                 this.idIncrease()
                 eventBus.$emit('review-submitted', taskReview)
                 this.name = null
@@ -234,38 +254,44 @@ Vue.component('create-task',{
             } else {
                 this.errors = 1
                 this.clearCheckLength()
-
             }
         },
-        idIncrease(){
+        idIncrease() {
             this.id++
         },
-        clearCheckLength(){
-            return  this.checkLength = []
+        clearCheckLength() {
+            return this.checkLength = []
         },
 
-        removeEmptyValues(object){
-            for(let key in object){
-                let value = object[key];
-                if (value===null || value===undefined || value===''){
-                    delete object[key];
-                }
-            }
-        }
+        // removeEmptyValues(object) {
+        //
+        //     for (let key of object) {
+        //
+        //         console.log(key)
+        //         let value = Object.values(key)[0];
+        //         let indx = key[Object.key(key)[0]];
+        //         console.log(value)
+        //         console.log("indx",indx)
+        //         if (value === null || value === undefined || value === '') {
+        //             console.log('hgg',key);
+        //             object.splice(key, 1);
+        //         }
+        //     }
+        // }
     }
 })
 
 let app = new Vue({
-    el:'#app',
+    el: '#app',
     data:
-        // tasks
+    // tasks
         {
-        column1:[],
-        column2:[],
-        column3:[]
-    },
-    methods:{
-        addColumn1(task){
+            column1: [],
+            column2: [],
+            column3: []
+        },
+    methods: {
+        addColumn1(task) {
             this.column1.push(task)
         }
     }
