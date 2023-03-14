@@ -56,12 +56,11 @@ Vue.component('columns', {
         }
     },
     methods: {
-        check() {
-            console.log(this.column1)
-        },
         changeTask(task) {
-            console.log(task)
-        }
+            (!this.column1[task.index].puncts[task.indexPuncts].done)? this.column1[task.index].puncts[task.indexPuncts].done = true : this.column1[task.index].puncts[task.indexPuncts].done = false
+            console.log(this.column1[task.index].puncts)
+        },
+
     },
 
     mounted() {
@@ -128,29 +127,22 @@ Vue.component('column', {
     methods: {
         updateTask(index) {
             this.selectedTask = index
-            // console.log(index)
         },
         returnId() {
             // console.log(this.col)
         },
         changeTask(index, indexPuncts, name){
-            console.log({index, indexPuncts, name});
             this.$emit('changeTask', {index, indexPuncts, name})
         },
         pereborTasks() {
             for (let task of this.col) {
                 for (let punc of task.puncts){
                     if (punc.done===false){
-                        console.log(punc.done)
+                        // console.log(punc.done)
                     }
                 }
                 let gg = task.puncts // let gg = Object.values(task.puncts).length
 
-
-                // for (val in task.puncts){
-                //
-                //     console.log(val)
-                // }
             }
             this.allowMove(this.count)
             this.count = null
@@ -159,11 +151,6 @@ Vue.component('column', {
             return null
         },
     },
-    // mounted(){
-    //     eventBus.$on('review-submitted',taskReview =>
-    //         this.tasks1.push(taskReview))
-    // }
-
 })
 
 Vue.component('create-task', {
@@ -251,7 +238,7 @@ Vue.component('create-task', {
                     ],
                     id: this.id
                 }
-                // this.removeEmptyValues(taskReview.puncts)
+                this.removeEmptyValues(taskReview.puncts)
                 this.idIncrease()
                 eventBus.$emit('review-submitted', taskReview)
                 this.name = null
@@ -274,33 +261,20 @@ Vue.component('create-task', {
             return this.checkLength = []
         },
 
-        // removeEmptyValues(object) {
-        //
-        //     for (let key of object) {
-        //
-        //         console.log(key)
-        //         let value = Object.values(key)[0];
-        //         let indx = key[Object.key(key)[0]];
-        //         console.log(value)
-        //         console.log("indx",indx)
-        //         if (value === null || value === undefined || value === '') {
-        //             console.log('hgg',key);
-        //             object.splice(key, 1);
-        //         }
-        //     }
-        // }
+        removeEmptyValues(arr) {
+            for (let el of arr){
+                if (el.punct===null){
+                    console.log(el)
+                    arr.splice(arr.indexOf(el),1)
+                }
+            }
+            return arr
+        }
     }
 })
 
 let app = new Vue({
     el: '#app',
-    data:
-    // tasks
-        {
-            column1: [],
-            column2: [],
-            column3: []
-        },
     methods: {
         addColumn1(task) {
             this.column1.push(task)
