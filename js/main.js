@@ -65,8 +65,25 @@ Vue.component('columns', {
     methods: {
         changeTask(task) {
             (!this.columns[task.colIndex][task.index].puncts[task.indexPuncts].done)? this.columns[task.colIndex][task.index].puncts[task.indexPuncts].done = true : this.columns[task.colIndex][task.index].puncts[task.indexPuncts].done = false
-            console.log(this.columns[task.colIndex])
+            // console.log(this.columns[task.colIndex])
+            let movingTask = this.columns[task.colIndex][task.index]
+            // console.log(this.columns)
+            this.moveTask(movingTask,task, this.columns[task.colIndex])
         },
+        moveTask(movingTask, task, col){
+            let allLength = movingTask.puncts.length
+            let doneLength = 0
+            for (let i of movingTask.puncts){
+                if (i.done===true){
+                    doneLength++
+                }
+            }
+            if (doneLength>allLength/2){
+                // col.task.index
+            }
+            console.log(col.findIndex(task.index))
+            // console.log(movingTask.puncts.length)
+        }
     },
 // пора начинать делать переходы тасков на основании их заполненности
     mounted() {
@@ -92,8 +109,6 @@ Vue.component('column', {
     },
     template: `
         <div>
-
-            
             <p>{{name}}</p>
             <p>
                <div>
