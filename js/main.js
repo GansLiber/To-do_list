@@ -14,12 +14,13 @@ Vue.component('columns', {
     template: `
         <div class="glob-list">
             <column class="column" :colIndex="colIndex1" :name="name" :col="columns[0]" @changeTask="changeTask"></column>
-            <column class="column" :colIndex="colIndex2" :name="name2" :col="columns[1]"></column>
-            <column class="column" :colIndex="colIndex3" :name="name3" :col="columns[2]"></column>
+            <column class="column" :colIndex="colIndex2" :name="name2" :col="columns[1]" @changeTask="changeTask"></column>
+            <column class="column" :colIndex="colIndex3" :name="name3" :col="columns[2]" @changeTask="changeTask"></column>
         </div>
     `,
     data() {
         return {
+            temporalCol:[],
             columns:[
                 [],
             [
@@ -53,9 +54,9 @@ Vue.component('columns', {
                 [],
             ],
 
-            name: 'columnStart',
-            name2: 'columnInProgress',
-            name3: 'columnDone',
+            name: 'Начинаем',
+            name2: 'Продолжаем',
+            name3: 'Закончили',
 
             colIndex1: 0,
             colIndex2: 1,
@@ -67,10 +68,10 @@ Vue.component('columns', {
             (!this.columns[task.colIndex][task.index].puncts[task.indexPuncts].done)? this.columns[task.colIndex][task.index].puncts[task.indexPuncts].done = true : this.columns[task.colIndex][task.index].puncts[task.indexPuncts].done = false
             // console.log(this.columns[task.colIndex])
             let movingTask = this.columns[task.colIndex][task.index]
-            // console.log(this.columns)
-            this.moveTask(movingTask,task, this.columns[task.colIndex])
+            console.log(this.columns[0].length)
+            this.moveTask(movingTask,task)
         },
-        moveTask(movingTask, task, col){
+        moveTask(movingTask, task){
             let allLength = movingTask.puncts.length
             let doneLength = 0
             for (let i of movingTask.puncts){
@@ -78,12 +79,18 @@ Vue.component('columns', {
                     doneLength++
                 }
             }
-            if (doneLength>allLength/2){
-                // col.task.index
+
+            if (doneLength>allLength/2 && this.columns[task.colIndex] === this.columns[0]){
+                let move = this.columns[task.colIndex].splice(task.index,1)
+                this.columns[task.colIndex+1].push(...move)
             }
-            console.log(col.findIndex(task.index))
-            // console.log(movingTask.puncts.length)
-        }
+            if (doneLength===allLength){
+                let move = this.columns[task.colIndex].splice(task.index,1)
+                this.columns[task.colIndex+1].push(...move)
+            }
+
+        },
+
     },
 // пора начинать делать переходы тасков на основании их заполненности
     mounted() {
@@ -130,6 +137,8 @@ Vue.component('column', {
                                 <label :for="pun.id">
                                 <input
                                     type="checkbox"
+                                    :disabled="prop.done"
+                                    :checked="prop.done"
                                     id="pun.id" 
                                     value="1"
                                     @change="changeTask(index, indexPuncts, colIndex)"
@@ -220,6 +229,7 @@ Vue.component('create-task', {
             punct4: null,
             punct5: null,
             id: 1,
+            countDone:0,
             errors: 0,
             checkLength: []
         }
@@ -260,7 +270,8 @@ Vue.component('create-task', {
                             done: false
                         },
                     ],
-                    id: this.id
+                    id: this.id,
+                    countDone: this.countDone
                 }
                 this.removeEmptyValues(taskReview.puncts)
                 this.idIncrease()
@@ -288,7 +299,7 @@ Vue.component('create-task', {
         removeEmptyValues(arr) {
             for (let el of arr){
                 if (el.punct===null){
-                    console.log(el)
+                    // console.log(el)
                     arr.splice(arr.indexOf(el),1)
                 }
             }
