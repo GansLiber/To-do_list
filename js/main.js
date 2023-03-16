@@ -15,42 +15,42 @@ Vue.component('columns', {
         <div class="glob-list">
             <column class="column" :colIndex="colIndex1" :name="name" :col="columns[0]" @changeTask="changeTask"></column>
             <column class="column" :colIndex="colIndex2" :name="name2" :col="columns[1]" @changeTask="changeTask"></column>
-            <column class="column" :colIndex="colIndex3" :name="name3" :col="columns[2]" @changeTask="changeTask"></column>
+            <column class="column" :colIndex="colIndex3" :name="name3" :col="columns[2]" ></column>
         </div>
     `,
     data() {
         return {
-            temporalCol:[],
-            columns:[
+            temporalCol: [],
+            columns: [
                 [],
-            [
-            {
-                name: 'gg',
-                puncts: [
+                [
                     {
-                        punct: 'fdfsdf',
-                        done: false
-                    },
-                    {
-                        punct: 'fdfsdf',
-                        done: false
-                    },
-                    {
-                        punct: 'fdfsdf',
-                        done: false
-                    },
-                    {
-                        punct: null,
-                        done: false
-                    },
-                    {
-                        punct: 'fdfsdf',
-                        done: false
-                    },
+                        name: 'gg',
+                        puncts: [
+                            {
+                                punct: 'fdfsdf',
+                                done: false
+                            },
+                            {
+                                punct: 'fdfsdf',
+                                done: false
+                            },
+                            {
+                                punct: 'fdfsdf',
+                                done: false
+                            },
+                            {
+                                punct: null,
+                                done: false
+                            },
+                            {
+                                punct: 'fdfsdf',
+                                done: false
+                            },
+                        ],
+                        id: 0
+                    }
                 ],
-                id: 0
-            }
-        ],
                 [],
             ],
 
@@ -63,40 +63,57 @@ Vue.component('columns', {
             colIndex3: 2,
         }
     },
+    mounted() {
+        eventBus.$on('review-submitted', taskReview => {
+            console.log(this.columns[0].length);
+            if (this.columns[0].length<3){
+                console.log(taskReview)
+                for (pun in taskReview.puncts){
+                    if (pun === null || pun === '' || pun === undefined) {
+
+                        let indx = taskReview.puncts.indexOf(pun)
+                        console.log("indexPun", taskReview.puncts.indexOf(pun))
+                        taskReview.puncts.splice(indx, 1)
+                    }
+                }
+                this.columns[0].push(taskReview)
+            }
+        })
+    },
     methods: {
         changeTask(task) {
-            (!this.columns[task.colIndex][task.index].puncts[task.indexPuncts].done)? this.columns[task.colIndex][task.index].puncts[task.indexPuncts].done = true : this.columns[task.colIndex][task.index].puncts[task.indexPuncts].done = false
+            (!this.columns[task.colIndex][task.index].puncts[task.indexPuncts].done) ? this.columns[task.colIndex][task.index].puncts[task.indexPuncts].done = true : this.columns[task.colIndex][task.index].puncts[task.indexPuncts].done = false
             // console.log(this.columns[task.colIndex])
             let movingTask = this.columns[task.colIndex][task.index]
             console.log(this.columns[0].length)
-            this.moveTask(movingTask,task)
+            this.moveTask(movingTask, task)
+            console.log(this.columns[task.colIndex][task.index].puncts)
         },
-        moveTask(movingTask, task){
+        moveTask(movingTask, task) {
             let allLength = movingTask.puncts.length
             let doneLength = 0
-            for (let i of movingTask.puncts){
-                if (i.done===true){
+            for (let i of movingTask.puncts) {
+                if (i.done === true) {
                     doneLength++
                 }
             }
 
-            if (doneLength>allLength/2 && this.columns[task.colIndex] === this.columns[0]){
-                let move = this.columns[task.colIndex].splice(task.index,1)
-                this.columns[task.colIndex+1].push(...move)
+            if (doneLength > allLength / 2 && this.columns[task.colIndex] === this.columns[0]) {
+                if (this.columns[1].length<5){
+                    let move = this.columns[task.colIndex].splice(task.index, 1)
+                    this.columns[task.colIndex + 1].push(...move)
+                }
             }
-            if (doneLength===allLength){
-                let move = this.columns[task.colIndex].splice(task.index,1)
-                this.columns[task.colIndex+1].push(...move)
+            if (doneLength === allLength) {
+                let move = this.columns[task.colIndex].splice(task.index, 1)
+                this.columns[task.colIndex + 1].push(...move)
             }
 
         },
 
     },
 // пора начинать делать переходы тасков на основании их заполненности
-    mounted() {
-        eventBus.$on('review-submitted', taskReview =>
-            this.columns[0].push(taskReview))
-    }
+
 })
 
 Vue.component('column', {
@@ -121,7 +138,7 @@ Vue.component('column', {
                <div>
                 <p v-if="!col.length">Нет тасков</p>
                 
-                  <ul @click="returnId">
+                  <ul>
                     <li
                     v-for="(pun, index) in col" 
                     class="taskBorder"
@@ -158,30 +175,9 @@ Vue.component('column', {
         }
     },
     methods: {
-        updateTask(index) {
-            this.selectedTask = index
-        },
-        returnId() {
-            // console.log(this.col)
-        },
-        changeTask(index, indexPuncts, colIndex){
-            this.$emit('changeTask', {index, indexPuncts, colIndex})
-        },
-        pereborTasks() {
-            for (let task of this.col) {
-                for (let punc of task.puncts){
-                    if (punc.done===false){
-                        // console.log(punc.done)
-                    }
-                }
-                let gg = task.puncts // let gg = Object.values(task.puncts).length
 
-            }
-            this.allowMove(this.count)
-            this.count = null
-        },
-        allowMove(count) {
-            return null
+        changeTask(index, indexPuncts, colIndex) {
+            this.$emit('changeTask', {index, indexPuncts, colIndex})
         },
     },
 })
@@ -223,19 +219,43 @@ Vue.component('create-task', {
     data() {
         return {
             name: null,
+            check:[
+                {
+                    punct: null,
+                    done: false
+                },
+                {
+                    punct: null,
+                    done: false
+                },
+                {
+                    punct: null,
+                    done: false
+                },
+                {
+                    punct: null,
+                    done: false
+                },
+                {
+                    punct: null,
+                    done: false
+                }
+            ],
+            puncts:[],
             punct1: null,
             punct2: null,
             punct3: null,
             punct4: null,
             punct5: null,
             id: 1,
-            countDone:0,
+            countDone: 0,
             errors: 0,
             checkLength: []
         }
     },
     methods: {
         onSubmit() {
+            this.checkLength = []
             this.checkLength.push(
                 this.punct1,
                 this.punct2,
@@ -247,7 +267,6 @@ Vue.component('create-task', {
             if (this.checkLength.length > 2) {
                 let taskReview = {
                     name: this.name,
-
                     puncts: [
                         {
                             punct: this.punct1,
@@ -297,20 +316,19 @@ Vue.component('create-task', {
         },
 
         removeEmptyValues(arr) {
-            for (let el of arr){
-                if (el.punct===null){
-                    // console.log(el)
-                    arr.splice(arr.indexOf(el),1)
+
+            for (let el of arr) {
+                if (el.punct === null || el.punct === '' || el.punct === undefined) {
+                    let indx = arr.indexOf(el)
+                    console.log("indexPun", arr.indexOf(el))
+                    arr.splice(indx, 1)
                 }
             }
-            return arr
         }
     }
 })
 
 let app = new Vue({
     el: '#app',
-    methods: {
-
-    }
+    methods: {}
 })
