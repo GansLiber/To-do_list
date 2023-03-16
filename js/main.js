@@ -67,15 +67,20 @@ Vue.component('columns', {
         eventBus.$on('review-submitted', taskReview => {
             console.log(this.columns[0].length);
             if (this.columns[0].length<3){
-                console.log(taskReview)
-                for (pun in taskReview.puncts){
-                    if (pun === null || pun === '' || pun === undefined) {
-
-                        let indx = taskReview.puncts.indexOf(pun)
-                        console.log("indexPun", taskReview.puncts.indexOf(pun))
-                        taskReview.puncts.splice(indx, 1)
-                    }
-                }
+                console.log('puncts', taskReview.puncts)
+                // for (pun in taskReview.puncts){
+                //     console.log('punct', taskReview.puncts[count].punct)
+                //     if (taskReview.puncts[count].punct === null || taskReview.puncts[count].punct === '' || taskReview.puncts[count].punct === undefined)
+                //     {
+                //         console.log("PunctCorapt", taskReview.puncts[count])
+                //
+                //         let indx = taskReview.puncts[count]
+                //         // console.log("indexPun", taskReview.puncts[count])
+                //         taskReview.puncts.splice(indx, 1)
+                //     }
+                //     count++
+                // }
+                // console.log("itog", taskReview.puncts)
                 this.columns[0].push(taskReview)
             }
         })
@@ -133,7 +138,7 @@ Vue.component('column', {
     },
     template: `
         <div>
-            <p>{{name}}</p>
+            <h3>{{name}}</h3>
             <p>
                <div>
                 <p v-if="!col.length">Нет тасков</p>
@@ -144,7 +149,7 @@ Vue.component('column', {
                     class="taskBorder"
                     :key="pun.id"
                     >
-                        <p>{{pun.name}}</p>
+                        <h3>{{pun.name}}</h3>
                         <p>{{pun.id}}</p>
                         <ul class="inUl">
                             <li 
@@ -292,7 +297,7 @@ Vue.component('create-task', {
                     id: this.id,
                     countDone: this.countDone
                 }
-                this.removeEmptyValues(taskReview.puncts)
+                taskReview.puncts = this.removeEmptyValues(taskReview.puncts)
                 this.idIncrease()
                 eventBus.$emit('review-submitted', taskReview)
                 this.name = null
@@ -317,13 +322,12 @@ Vue.component('create-task', {
 
         removeEmptyValues(arr) {
 
-            for (let el of arr) {
-                if (el.punct === null || el.punct === '' || el.punct === undefined) {
-                    let indx = arr.indexOf(el)
-                    console.log("indexPun", arr.indexOf(el))
-                    arr.splice(indx, 1)
-                }
-            }
+            let newArr = arr.filter(el => {
+                return el.punct !== null;
+            });
+            arr = newArr
+            return arr
+            // console.log('new', arr)
         }
     }
 })
