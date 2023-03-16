@@ -64,7 +64,7 @@ Vue.component('columns', {
                 }
             }
 
-            if (doneLength > allLength / 2 && this.columns[task.colIndex] === this.columns[0]) {
+            if (doneLength > allLength / 2 && doneLength !== allLength && this.columns[task.colIndex] === this.columns[0]) {
                 if (this.columns[1].length<5){
                     let move = this.columns[task.colIndex].splice(task.index, 1)
                     this.columns[task.colIndex + 1].push(...move)
@@ -73,9 +73,9 @@ Vue.component('columns', {
                 }
             }
 
-            if (doneLength === allLength && this.columns[task.colIndex] === this.columns[1]) {
+            if (doneLength === allLength) {
                 let move = this.columns[task.colIndex].splice(task.index, 1)
-                this.columns[task.colIndex + 1].push(...move)
+                this.columns[2].push(...move)
                 this.dateTask(movingTask)
                 this.block1col = false
             }
