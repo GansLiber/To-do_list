@@ -13,9 +13,9 @@ Vue.component('columns', {
 
     template: `
         <div class="glob-list">
-            <column class="column" :block1col="block1col" :class="{block1col: block1col}" :colIndex="colIndex1" :name="name" :col="columns[0]" @changeTask="changeTask"></column>
+            <column class="column" :colIndex="colIndex1" :name="name" :col="columns[0]" @changeTask="changeTask" :class="{block1col: block1col}" :block1col="block1col"></column>
             <column class="column" :colIndex="colIndex2" :name="name2" :col="columns[1]" @changeTask="changeTask"></column>
-            <column class="column" :colIndex="colIndex3" :name="name3" :col="columns[2]" ></column>
+            <column class="column" :colIndex="colIndex3" :name="name3" :col="columns[2]" @changeTask="changeTask"></column>
         </div>
     `,
     data() {
@@ -35,7 +35,7 @@ Vue.component('columns', {
             colIndex2: 1,
             colIndex3: 2,
 
-            block1col: false
+            block1col: false,
         }
     },
     mounted() {
@@ -52,11 +52,8 @@ Vue.component('columns', {
     methods: {
         changeTask(task) {
             (!this.columns[task.colIndex][task.index].puncts[task.indexPuncts].done) ? this.columns[task.colIndex][task.index].puncts[task.indexPuncts].done = true : this.columns[task.colIndex][task.index].puncts[task.indexPuncts].done = false
-            // console.log(this.columns[task.colIndex])
             let movingTask = this.columns[task.colIndex][task.index]
-            console.log(this.columns[0].length)
             this.moveTask(movingTask, task)
-            // console.log(this.columns[task.colIndex][task.index].puncts)
         },
         moveTask(movingTask, task) {
             let allLength = movingTask.puncts.length
@@ -79,9 +76,19 @@ Vue.component('columns', {
             if (doneLength === allLength && this.columns[task.colIndex] === this.columns[1]) {
                 let move = this.columns[task.colIndex].splice(task.index, 1)
                 this.columns[task.colIndex + 1].push(...move)
+                this.dateTask(movingTask)
                 this.block1col = false
             }
         },
+        dateTask(movingTask){
+            let date = new Date()
+            let year = date.getFullYear()
+            let month = date.getMonth()+1
+            let day = date.getDate()
+            let time = date.toLocaleTimeString()
+            let strDate = year+'-'+month+'-'+day+' , '+time
+            movingTask.dateEnd = strDate
+        }
     },
 })
 
@@ -135,6 +142,7 @@ Vue.component('column', {
                                     >{{prop.punct}}<p>{{prop.done}}</p></label><br>
                             </li>
                         </ul>
+                        <p>{{pun.dateEnd}}</p>
                     </li>
                 </ul>
             </div>
@@ -144,15 +152,16 @@ Vue.component('column', {
     data() {
         return {
             checkdTask: [],
-            count: null
+            count: null,
+            strDate: null
         }
     },
     methods: {
-
         changeTask(index, indexPuncts, colIndex) {
+            console.log(this.strDate)
             this.$emit('changeTask', {index, indexPuncts, colIndex})
         },
-    },
+    }
 })
 
 Vue.component('create-task', {
@@ -240,6 +249,7 @@ Vue.component('create-task', {
                             done: false
                         },
                     ],
+                    dateEnd:null,
                     id: this.id,
                     countDone: this.countDone
                 }
