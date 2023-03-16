@@ -13,7 +13,7 @@ Vue.component('columns', {
 
     template: `
         <div class="glob-list">
-            <column class="column" :colIndex="colIndex1" :name="name" :col="columns[0]" @changeTask="changeTask"></column>
+            <column class="column" :block1col="block1col" :class="{block1col: block1col}" :colIndex="colIndex1" :name="name" :col="columns[0]" @changeTask="changeTask"></column>
             <column class="column" :colIndex="colIndex2" :name="name2" :col="columns[1]" @changeTask="changeTask"></column>
             <column class="column" :colIndex="colIndex3" :name="name3" :col="columns[2]" ></column>
         </div>
@@ -23,34 +23,7 @@ Vue.component('columns', {
             temporalCol: [],
             columns: [
                 [],
-                [
-                    {
-                        name: 'gg',
-                        puncts: [
-                            {
-                                punct: 'fdfsdf',
-                                done: false
-                            },
-                            {
-                                punct: 'fdfsdf',
-                                done: false
-                            },
-                            {
-                                punct: 'fdfsdf',
-                                done: false
-                            },
-                            {
-                                punct: null,
-                                done: false
-                            },
-                            {
-                                punct: 'fdfsdf',
-                                done: false
-                            },
-                        ],
-                        id: 0
-                    }
-                ],
+                [],
                 [],
             ],
 
@@ -61,27 +34,18 @@ Vue.component('columns', {
             colIndex1: 0,
             colIndex2: 1,
             colIndex3: 2,
+
+            block1col: false
         }
     },
     mounted() {
         eventBus.$on('review-submitted', taskReview => {
             console.log(this.columns[0].length);
-            if (this.columns[0].length<3){
-                console.log('puncts', taskReview.puncts)
-                // for (pun in taskReview.puncts){
-                //     console.log('punct', taskReview.puncts[count].punct)
-                //     if (taskReview.puncts[count].punct === null || taskReview.puncts[count].punct === '' || taskReview.puncts[count].punct === undefined)
-                //     {
-                //         console.log("PunctCorapt", taskReview.puncts[count])
-                //
-                //         let indx = taskReview.puncts[count]
-                //         // console.log("indexPun", taskReview.puncts[count])
-                //         taskReview.puncts.splice(indx, 1)
-                //     }
-                //     count++
-                // }
-                // console.log("itog", taskReview.puncts)
-                this.columns[0].push(taskReview)
+            if (!this.block1col){
+                if (this.columns[0].length<3){
+                    console.log('puncts', taskReview.puncts)
+                    this.columns[0].push(taskReview)
+                }
             }
         })
     },
@@ -92,7 +56,7 @@ Vue.component('columns', {
             let movingTask = this.columns[task.colIndex][task.index]
             console.log(this.columns[0].length)
             this.moveTask(movingTask, task)
-            console.log(this.columns[task.colIndex][task.index].puncts)
+            // console.log(this.columns[task.colIndex][task.index].puncts)
         },
         moveTask(movingTask, task) {
             let allLength = movingTask.puncts.length
@@ -107,18 +71,18 @@ Vue.component('columns', {
                 if (this.columns[1].length<5){
                     let move = this.columns[task.colIndex].splice(task.index, 1)
                     this.columns[task.colIndex + 1].push(...move)
+                } else {
+                    this.block1col = true
                 }
             }
-            if (doneLength === allLength) {
+
+            if (doneLength === allLength && this.columns[task.colIndex] === this.columns[1]) {
                 let move = this.columns[task.colIndex].splice(task.index, 1)
                 this.columns[task.colIndex + 1].push(...move)
+                this.block1col = false
             }
-
         },
-
     },
-// пора начинать делать переходы тасков на основании их заполненности
-
 })
 
 Vue.component('column', {
@@ -134,6 +98,10 @@ Vue.component('column', {
         colIndex: {
             type: Number,
             required: true
+        },
+        block1col: {
+            type: Boolean,
+            required: false
         }
     },
     template: `
@@ -159,7 +127,7 @@ Vue.component('column', {
                                 <label :for="pun.id">
                                 <input
                                     type="checkbox"
-                                    :disabled="prop.done"
+                                    :disabled="prop.done || block1col"
                                     :checked="prop.done"
                                     id="pun.id" 
                                     value="1"
@@ -224,28 +192,6 @@ Vue.component('create-task', {
     data() {
         return {
             name: null,
-            check:[
-                {
-                    punct: null,
-                    done: false
-                },
-                {
-                    punct: null,
-                    done: false
-                },
-                {
-                    punct: null,
-                    done: false
-                },
-                {
-                    punct: null,
-                    done: false
-                },
-                {
-                    punct: null,
-                    done: false
-                }
-            ],
             puncts:[],
             punct1: null,
             punct2: null,
@@ -327,7 +273,6 @@ Vue.component('create-task', {
             });
             arr = newArr
             return arr
-            // console.log('new', arr)
         }
     }
 })

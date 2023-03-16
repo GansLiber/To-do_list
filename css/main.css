@@ -9,6 +9,9 @@ body{
     display: flex;
     flex-flow: column wrap;
 }
+.block1col{
+    background-color: #a93838;
+}
 .btn{
     background-color: #5dcb5d;
 }
