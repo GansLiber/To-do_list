@@ -39,17 +39,32 @@ Vue.component('columns', {
         }
     },
     mounted() {
+        const saveCols = localStorage.getItem('columns')
+        if(saveCols){
+            this.columns = JSON.parse(saveCols)
+        }
+
         eventBus.$on('review-submitted', taskReview => {
             console.log(this.columns[0].length);
             if (!this.block1col){
                 if (this.columns[0].length<3){
                     console.log('puncts', taskReview.puncts)
                     this.columns[0].push(taskReview)
+                    this.saveCols()
                 }
             }
         })
     },
+    watch:{
+        columns: {
+            handler: 'saveCols',
+            deep: true
+        }
+    },
     methods: {
+        saveCols(){
+            localStorage.setItem('columns', JSON.stringify(this.columns))
+        },
         changeTask(task) {
             (!this.columns[task.colIndex][task.index].puncts[task.indexPuncts].done) ? this.columns[task.colIndex][task.index].puncts[task.indexPuncts].done = true : this.columns[task.colIndex][task.index].puncts[task.indexPuncts].done = false
             let movingTask = this.columns[task.colIndex][task.index]
@@ -278,10 +293,12 @@ Vue.component('create-task', {
 
         removeEmptyValues(arr) {
 
-            let newArr = arr.filter(el => {
-                return el.punct !== null;
-            });
-            arr = newArr
+            arr = arr.filter(el => {
+                if (el.punct !== null || '' || undefined) {
+                    return el.punct;
+                }
+
+            })
             return arr
         }
     }
