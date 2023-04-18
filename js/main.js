@@ -1,4 +1,35 @@
 let eventBus = new Vue()
+// import VueProgressBar from 'vue-progress-bar'
+
+
+Vue.component('vue-progress-bar', {
+    template:`
+      <div class="progress-bar-container">
+        <div class="progress-bar" :style="{ width: progress + '%' }"></div>
+      </div>
+    `,
+    data(){
+        return{
+
+        }
+    },
+    props: {
+        max: {
+            type: Number,
+            default: 100,
+        },
+        value: {
+            type: Number,
+            default: 0,
+        },
+    },
+    computed: {
+        progress() {
+            return (this.value / this.max) * 100;
+        },
+    },
+})
+
 
 Vue.component('main-list', {
     template: `
@@ -69,17 +100,18 @@ Vue.component('columns', {
             (!this.columns[task.colIndex][task.index].puncts[task.indexPuncts].done) ? this.columns[task.colIndex][task.index].puncts[task.indexPuncts].done = true : this.columns[task.colIndex][task.index].puncts[task.indexPuncts].done = false
             let movingTask = this.columns[task.colIndex][task.index]
             this.moveTask(movingTask, task)
+            console.log('gabella', movingTask, task)
         },
         moveTask(movingTask, task) {
             let allLength = movingTask.puncts.length
-            let doneLength = 0
+            movingTask.countDone = 0
             for (let i of movingTask.puncts) {
                 if (i.done === true) {
-                    doneLength++
+                    movingTask.countDone++
                 }
             }
-
-            if (doneLength > allLength / 2 && doneLength !== allLength && this.columns[task.colIndex] === this.columns[0]) {
+            console.log('ey',movingTask.countDone)
+            if (movingTask.countDone > allLength / 2 && movingTask.countDone !== allLength && this.columns[task.colIndex] === this.columns[0]) {
                 if (this.columns[1].length<5){
                     let move = this.columns[task.colIndex].splice(task.index, 1)
                     this.columns[task.colIndex + 1].push(...move)
@@ -88,7 +120,7 @@ Vue.component('columns', {
                 }
             }
 
-            if (doneLength === allLength) {
+            if (movingTask.countDone === allLength) {
                 let move = this.columns[task.colIndex].splice(task.index, 1)
                 this.columns[2].push(...move)
                 this.dateTask(movingTask)
@@ -108,6 +140,7 @@ Vue.component('columns', {
 })
 
 Vue.component('column', {
+
     props: {
         col: {
             type: Array,
@@ -137,10 +170,12 @@ Vue.component('column', {
                     <li
                     v-for="(pun, index) in col" 
                     class="taskBorder"
-                    :key="pun.id"
                     >
                         <h3>{{pun.name}}</h3>
                         <p>{{pun.id}}</p>
+                        <div>
+                          <vue-progress-bar :max="100" :value="(pun.countDone/pun.puncts.length)*100"></vue-progress-bar>
+                        </div>
                         <ul class="inUl">
                             <li 
                               v-for="prop, indexPuncts in pun.puncts"
@@ -172,6 +207,7 @@ Vue.component('column', {
         }
     },
     methods: {
+
         changeTask(index, indexPuncts, colIndex) {
             console.log(this.strDate)
             this.$emit('changeTask', {index, indexPuncts, colIndex})
@@ -306,5 +342,5 @@ Vue.component('create-task', {
 
 let app = new Vue({
     el: '#app',
-    methods: {}
+    methods: {},
 })

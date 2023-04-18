@@ -43,3 +43,13 @@ p{
 .punct>input{
     height: 30px;
 }
+.progress-bar-container {
+    width: 100%;
+    height: 20px;
+    background-color: #ccc;
+}
+
+.progress-bar {
+    height: 100%;
+    background-color: #0078d4;
+}
